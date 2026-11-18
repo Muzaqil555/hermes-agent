@@ -309,6 +309,12 @@ _DATA_ARG_NOT_A_COMMAND = [
     "echo '(poweroff)'",
     "echo '{ rm -rf /; }'",
     'find . -name "*(reboot)*"',
+    # Quoted word inside `(` in array assignments, function calls, or Python literals
+    # is data, not a subshell command (#157490).
+    "x=('reboot')",
+    "declare -a arr=('reboot')",
+    "x = ('reboot')",
+    "python3 - <<'EOF'\nkey=[('reboot','x')]\nprint('reboot')\nEOF",
 ]
 
 
@@ -331,6 +337,9 @@ _COMMAND_POSITION_ROOT_WIPES = [
     "{ rm -rf /; }",
     "(rm -rf ~)",
     "(sudo rm -rf /)",
+    "ls; ('reboot')",
+    "time (reboot)",
+    "cat <(reboot)",
 ]
 
 

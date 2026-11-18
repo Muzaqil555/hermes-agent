@@ -1430,11 +1430,25 @@ def _iter_shell_command_starts(command: str):
                 # `{` opens a brace group only as its own word (after whitespace or a separator): `${IFS}`
                 # is a parameter expansion and `-{delete,print}` a brace-expansion word, and a start
                 # marked inside either splits the word the flat patterns need to see intact.
-                if command[i] in "(;\n" or (command[i] == "{" and (i == 0 or command[i - 1].isspace()
-                                                                   or command[i - 1] in "(;&|)")):
+                # `(` opens a subshell/process-sub only after start/whitespace/separator/`<`/`>`, not
+                # attached to `=` (`x=('reboot')`, `declare -a arr=('reboot')`), `[` (`key=[('reboot')]`),
+                # or a word (`print('reboot')`), nor right after an assignment operator (`x = ('reboot')`).
+                ch = command[i]
+                if (
+                    ch in ";\n"
+                    or (ch == "{" and (i == 0 or command[i - 1].isspace() or command[i - 1] in "(;&|)"))
+                    or (
+                        ch == "("
+                        and (
+                            i == 0
+                            or command[i - 1] in "(;&|{<>"
+                            or (command[i - 1].isspace() and command[:i].rstrip()[-1:] not in ("=", "["))
+                        )
+                    )
+                ):
                     starts.append(i + 1)
-                elif command[i] in "&|":
-                    repeated = i + 1 < end and command[i + 1] == command[i]
+                elif ch in "&|":
+                    repeated = i + 1 < end and command[i + 1] == ch
                     skip = i + 1 if repeated else skip
                     starts.append(i + 1 + repeated)
 
