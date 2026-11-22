@@ -57,6 +57,9 @@ FALSE_POSITIVES = [
     "docker compose up --detach web",
     "docker compose up -d && curl -s localhost:3000/health",
     "docker compose up -d && sleep 5 && docker compose ps",
+    "docker compose up -d && docker compose logs --tail 50",
+    "docker compose up -d && docker compose logs --tail=50 web",
+    "docker compose up -d && docker logs app",
     ".venv/bin/python -m pip install uvicorn",
     "git switch -c bump-vite",
     "grep -q vite package.json 2>/dev/null && npm run build",
@@ -180,6 +183,7 @@ TRUE_POSITIVES = [
     "case $1 in\n  test ) npm run dev ;;\nesac",
     "docker compose run web npm run dev up -d",
     "docker compose up -d && docker compose --profile dev logs -f",
+    "docker compose up -d && docker logs --follow app",
     "ssh -p 2222 host uvicorn app:app",
     "docker exec -it app uvicorn app:app",
 ]

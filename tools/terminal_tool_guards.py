@@ -139,8 +139,9 @@ _DATA_COMMANDS = frozenset((
     "lsof curl wget git export unset column nl base64 xxd od fold paste tac rev comm md5sum sha256sum "
     "shasum true false done fi esac"
 ).split())
-# Subcommands of `docker` / `docker compose` that report and return.
-_DOCKER_REPORT_SUBCOMMANDS = frozenset({"ps", "port", "config", "images", "version", "ls", "inspect"})
+# Subcommands of `docker` / `docker compose` that report and return. `logs` follows only
+# with -f/--follow, which `_follows_logs` refuses first.
+_DOCKER_REPORT_SUBCOMMANDS = frozenset({"ps", "port", "config", "images", "version", "ls", "inspect", "logs"})
 _PACKAGE_TOOLS = frozenset("npm pnpm yarn bun pip pip3 uv poetry pdm pipx brew apt apt-get apk dnf conda cargo gem".split())
 _PACKAGE_DATA_SUBCOMMANDS = frozenset((
     "install i add update up upgrade remove rm uninstall ls list view info show why outdated audit ci "
