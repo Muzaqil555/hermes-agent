@@ -503,6 +503,7 @@ def _build_cpr_disabled_output(stdout):
     try:
         import io as _io
         from prompt_toolkit.output.vt100 import Vt100_Output, _get_size
+        from prompt_toolkit.output.color_depth import ColorDepth
         from prompt_toolkit.data_structures import Size
 
         def _get_term_size():
@@ -513,7 +514,17 @@ def _build_cpr_disabled_output(stdout):
                 pass
             return Size(rows=rows or 24, columns=columns or 80)
 
-        return Vt100_Output(stdout, _get_term_size, enable_cpr=False)
+        # pt's own create_output() reads these from the environment; the bare constructor does not.
+        color_depth = ColorDepth.from_env()
+        if color_depth is None and os.environ.get("COLORTERM", "").lower() in ("truecolor", "24bit"):
+            color_depth = ColorDepth.DEPTH_24_BIT
+        return Vt100_Output(
+            stdout,
+            _get_term_size,
+            term=os.environ.get("TERM"),
+            default_color_depth=color_depth,
+            enable_cpr=False,
+        )
     except Exception:
         return None
 
